@@ -2,17 +2,32 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"net/http"
 )
 
-func main() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		n, err := fmt.Fprintf(w, "Hello from Golang!")
-		if err != nil {
-			fmt.Println(err)
-		}
-		fmt.Println(fmt.Sprintf("Number of bytes written: %d", n))
-	})
+const PORT = ":8080"
 
-	_ = http.ListenAndServe(":8080", nil)
+func Home(w http.ResponseWriter, r *http.Request) {
+	RenderTemplate(w, "home.page.html")
+}
+
+func About(w http.ResponseWriter, r *http.Request) {
+	RenderTemplate(w, "about.page.html")
+}
+
+func RenderTemplate(w http.ResponseWriter, tmpl string) {
+	parsedTemplate, _ := template.ParseFiles("./templates/" + tmpl)
+	err := parsedTemplate.Execute(w, nil)
+	if err != nil {
+		fmt.Println("error parsing template: ", err)
+		return
+	}
+}
+
+func main() {
+	http.HandleFunc("/", Home)
+	http.HandleFunc("/about", About)
+
+	_ = http.ListenAndServe(PORT, nil)
 }
