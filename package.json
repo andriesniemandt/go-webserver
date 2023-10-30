@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "build:css": "npx tailwindcss -i ./styles/app.css -o ./dist/app.css"
+    "build:css": "npx tailwindcss -i ./cmd/web/styles/app.css -o ./cmd/web/dist/app.css"
   },
   "devDependencies": {
     "tailwindcss": "^3.3.5"

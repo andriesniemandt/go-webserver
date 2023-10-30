@@ -1,3 +1,3 @@
 .idea/
-dist/
+cmd/web/dist/
 node_modules/
