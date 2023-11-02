@@ -5,6 +5,7 @@ import (
 	"github.com/andriesniemandt/go-webserver/pkg/config"
 	"github.com/andriesniemandt/go-webserver/pkg/handlers"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"net/http"
 )
 
@@ -12,11 +13,14 @@ import (
 var dist embed.FS
 
 func routes(app *config.AppConfig) http.Handler {
-	mux := chi.NewRouter()
+	r := chi.NewRouter()
 
-	mux.Get("/", handlers.Repo.Home)
-	mux.Get("/about", handlers.Repo.About)
-	mux.Get("/dist/*", http.FileServer(http.FS(dist)).ServeHTTP)
+	r.Use(middleware.Recoverer)
+	r.Use(middleware.Logger)
 
-	return mux
+	r.Get("/", handlers.Repo.Home)
+	r.Get("/about", handlers.Repo.About)
+	r.Get("/dist/*", http.FileServer(http.FS(dist)).ServeHTTP)
+
+	return r
 }
