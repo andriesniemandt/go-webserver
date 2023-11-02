@@ -1,7 +1,6 @@
 package main
 
 import (
-	"embed"
 	"github.com/andriesniemandt/go-webserver/pkg/config"
 	"github.com/andriesniemandt/go-webserver/pkg/handlers"
 	"github.com/andriesniemandt/go-webserver/pkg/render"
@@ -10,9 +9,6 @@ import (
 )
 
 const PORT = ":8080"
-
-//go:embed dist
-var dist embed.FS
 
 func main() {
 	var app config.AppConfig
@@ -28,9 +24,13 @@ func main() {
 	repo := handlers.NewRepo(&app)
 	handlers.NewHandlers(repo)
 
-	http.HandleFunc("/", handlers.Repo.Home)
-	http.HandleFunc("/about", handlers.Repo.About)
-	http.Handle("/dist/", http.FileServer(http.FS(dist)))
+	srv := &http.Server{
+		Addr:    PORT,
+		Handler: routes(&app),
+	}
 
-	_ = http.ListenAndServe(PORT, nil)
+	err = srv.ListenAndServe()
+	if err != nil {
+		log.Fatal(err)
+	}
 }
