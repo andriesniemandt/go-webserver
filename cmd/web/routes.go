@@ -17,6 +17,7 @@ func routes(app *config.AppConfig) http.Handler {
 
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Logger)
+	r.Use(WriteToConsole)
 
 	r.Get("/", handlers.Repo.Home)
 	r.Get("/about", handlers.Repo.About)
