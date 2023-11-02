@@ -2,25 +2,39 @@ package render
 
 import (
 	"bytes"
+	"github.com/andriesniemandt/go-webserver/pkg/config"
+	"github.com/andriesniemandt/go-webserver/pkg/models"
 	"html/template"
 	"log"
 	"net/http"
 	"path/filepath"
 )
 
-func Template(w http.ResponseWriter, tmpl string) {
-	tc, err := createTemplateCache()
-	if err != nil {
-		log.Fatal(err)
-	}
+var app *config.AppConfig
+
+// Config sets the config for the render package
+func Config(a *config.AppConfig) {
+	app = a
+}
+
+func AddDefaultData(data *models.TemplateData) *models.TemplateData {
+	return data
+}
+
+// Template renders templates using html/template
+func Template(w http.ResponseWriter, tmpl string, data *models.TemplateData) {
+	tc := app.TemplateCache
 
 	t, ok := tc[tmpl]
 	if !ok {
-		log.Fatal(err)
+		log.Fatal("could not get template from template cache")
 	}
 
 	buffer := new(bytes.Buffer)
-	err = t.Execute(buffer, nil)
+
+	data = AddDefaultData(data)
+
+	err := t.Execute(buffer, data)
 	if err != nil {
 		log.Println(err)
 	}
@@ -31,7 +45,7 @@ func Template(w http.ResponseWriter, tmpl string) {
 	}
 }
 
-func createTemplateCache() (map[string]*template.Template, error) {
+func CreateTemplateCache() (map[string]*template.Template, error) {
 	cache := map[string]*template.Template{}
 	pages, err := filepath.Glob("./templates/*.page.html")
 	if err != nil {

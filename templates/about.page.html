@@ -1,7 +1,13 @@
 {{ template "base" . }}
 
 {{ define "content" }}
-<h1 class="text-3xl font-bold underline">
-    About page
-</h1>
+<div>
+    <h1 class="text-3xl font-bold underline text-blue-500">
+        About
+    </h1>
+    <a href="/">Home</a>
+    <div>
+        From the template: {{ index .StringMap "test" }}
+    </div>
+</div>
 {{ end }}
